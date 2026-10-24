@@ -1,0 +1,84 @@
+{
+  "at": "2026-10-23T18:45:50.442Z",
+  "runtime": "perchai-cli@2.4.115",
+  "results": [
+    {
+      "requested": "glm-5.3-flash-starter",
+      "status": 200,
+      "ok": true,
+      "model": "glm-5.3-flash-starter",
+      "error": null,
+      "errorCode": null,
+      "text": "OK",
+      "modelLabel": "GLM 5.3 Flash (Starter)",
+      "transport": "official-cli",
+      "modelId": "z-ai/glm-5.3-flash",
+      "provider": "openrouter",
+      "usage": {
+        "inputTokens": 7221,
+        "outputTokens": 3,
+        "cacheReadInputTokens": 8192,
+        "totalTokens": 15416
+      },
+      "tier": "starter",
+      "durationMs": 3554,
+      "elapsedMs": 10463,
+      "threadId": "cli-84e732e3-a990-4a92-9a50-1924133fa098"
+    },
+    {
+      "requested": "minimax-m3.1-flash-starter",
+      "status": 200,
+      "ok": true,
+      "model": "minimax-m3.1-flash-starter",
+      "error": null,
+      "errorCode": null,
+      "text": "OK",
+      "modelLabel": "MiniMax M3.1 Flash (Starter)",
+      "transport": "official-cli",
+      "modelId": "minimax/minimax-m3.1-flash",
+      "provider": "openrouter",
+      "usage": {
+        "inputTokens": 4407,
+        "outputTokens": 14,
+        "cacheReadInputTokens": 11264,
+        "totalTokens": 15685
+      },
+      "tier": "starter",
+      "durationMs": 3164,
+      "elapsedMs": 9881,
+      "threadId": "cli-549e9888-5a27-4592-b6c4-8c084df12350"
+    },
+    {
+      "requested": "deepseek-flash-starter",
+      "status": 200,
+      "ok": true,
+      "model": "deepseek-flash-starter",
+      "error": null,
+      "errorCode": null,
+      "text": "OK",
+      "modelLabel": "DeepSeek V4.1 Flash 1017 (Starter)",
+      "transport": "official-cli",
+      "modelId": "deepseek/deepseek-v4.1-flash-1017",
+      "provider": "openrouter",
+      "usage": {
+        "inputTokens": 126,
+        "outputTokens": 3,
+        "cacheReadInputTokens": 15616,
+        "totalTokens": 15745
+      },
+      "tier": "starter",
+      "durationMs": 5026,
+      "elapsedMs": 12581,
+      "threadId": "cli-0a1c391c-17f0-4fce-a0b6-a2c5c7e6f33d"
+    },
+    {
+      "requested": "laguna-s",
+      "status": 200,
+      "ok": false,
+      "model": "laguna-s",
+      "error": "The model is busy right now. Wait a moment and try again, or pick a different model from the model menu.",
+      "errorCode": "cli_upstream_error",
+      "elapsedMs": 15281
+    }
+  ]
+}

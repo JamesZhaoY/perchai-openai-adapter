@@ -1,0 +1,7 @@
+data/state.json
+data/accounts.json
+data/threads.json
+data/browser-profile/
+node_modules/
+data/cli-history/
+.DS_Store

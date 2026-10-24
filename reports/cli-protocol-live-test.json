@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-23T19:05:51.422Z",
+  "runtime": "direct cli protocol",
+  "results": {
+    "nonstream": {
+      "mode": "nonstream",
+      "model": "glm-5.3-flash-starter",
+      "ok": true,
+      "status": 200,
+      "wallMs": 5704,
+      "text": "E2E-OK",
+      "reasoning": "Simple echo request.",
+      "modelReported": "z-ai/glm-5.3-flash",
+      "perch": {
+        "threadId": "cli-fb5ce388-f8be-47a4-9d78-c3fbf233ff33",
+        "tier": "starter",
+        "durationMs": 2437,
+        "citations": [],
+        "artifact": null,
+        "notices": []
+      },
+      "error": null
+    },
+    "console": {
+      "mode": "console",
+      "model": "glm-5.3-flash-starter",
+      "ok": true,
+      "status": 200,
+      "wallMs": 4422,
+      "error": null,
+      "errorCode": null,
+      "text": "OK",
+      "modelLabel": "z-ai/glm-5.3-flash",
+      "transport": "official-cli",
+      "modelId": "z-ai/glm-5.3-flash",
+      "provider": "perch",
+      "usage": {
+        "inputTokens": 29,
+        "outputTokens": 10,
+        "cacheReadInputTokens": 0,
+        "totalTokens": 39
+      },
+      "tier": "starter",
+      "durationMs": 1187,
+      "elapsedMs": 4417,
+      "threadId": "cli-ccabe52a-5262-4213-b0ea-af018df966f8"
+    },
+    "stream": {
+      "mode": "stream",
+      "model": "glm-5.3-flash-starter",
+      "ok": true,
+      "status": 200,
+      "wallMs": 4853,
+      "text": "E2E-OK",
+      "reasoning": "",
+      "perch": {
+        "threadId": "cli-d5517269-33cd-4c4b-92a0-7fb44dc6085e",
+        "tier": "starter",
+        "durationMs": 1258,
+        "model": "z-ai/glm-5.3-flash",
+        "usage": {
+          "inputTokens": 33,
+          "outputTokens": 7,
+          "cacheReadInputTokens": 0,
+          "totalTokens": 40
+        },
+        "citations": [],
+        "artifact": null,
+        "notices": []
+      },
+      "error": null
+    }
+  }
+}

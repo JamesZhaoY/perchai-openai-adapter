@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Perch Adapter · 控制台</title>
+<style>
+  :root { --bg:#F6F8F6; --card:#FFF; --ink:#1C2922; --muted:#627169; --line:#DDE5DF; --green:#196A4B; --green-soft:#E4F1E9; --brown:#785633; --red:#A3362C; --sidebar:300px; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; }
+  body { display:grid; grid-template-columns:var(--sidebar) minmax(0,1fr); height:100dvh; overflow:hidden; background:var(--bg); color:var(--ink); font:14px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif; }
+  button,input,textarea,select { font:inherit; }
+  button { color:inherit; cursor:pointer; }
+  button,select,summary { -webkit-tap-highlight-color:transparent; }
+  button:disabled { opacity:.5; cursor:default; }
+  :focus-visible { outline:2px solid #58A980; outline-offset:3px; }
+  h1,h2,h3,p { margin:0; }
+  .btn { min-height:36px; padding:7px 12px; border:1px solid var(--line); border-radius:8px; background:#FFF; font-size:12px; white-space:nowrap; }
+  .btn:hover { background:#F0F5F1; }
+  .btn.primary { color:#FFF; background:var(--green); border-color:var(--green); }
+  .btn.primary:hover { background:#125439; }
+  .mini { min-height:32px; padding:4px 9px; }
+  .rail { width:100%; min-width:0; min-height:0; padding:20px 16px 14px; display:flex; flex-direction:column; gap:14px; background:#17271F; color:#EEF5F0; overflow:auto; }
+  .brand { display:flex; align-items:center; gap:10px; flex:none; padding:0 4px 8px; }
+  .brand svg { width:30px; height:30px; flex:none; }
+  .brand b { font-size:17px; font-weight:600; letter-spacing:-.4px; }
+  .brand small { display:block; font-size:10px; color:#A5B9AD; letter-spacing:.12em; }
+  .rail-close { display:none; margin-left:auto; }
+  .label,.group-title { font-size:11px; color:var(--muted); letter-spacing:.06em; }
+  .rail .label,.rail .meta,.rail .note,.rail .group-title { color:#AFBFB5; }
+  .rail .btn { color:#E9F2EC; border-color:#41554A; background:#293D32; }
+  .rail .btn:hover { background:#354D40; }
+  .models { flex:1 1 0; min-height:min(300px,44dvh); display:flex; flex-direction:column; gap:10px; overflow:hidden; }
+  .models>.label { font-size:14px; font-weight:600; color:#F4F8F5; }
+  .search { flex:none; width:100%; min-width:0; min-height:40px; padding:9px 11px; border:1px solid #41564A; border-radius:8px; background:#263B2F; color:#F1F7F3; }
+  .search::placeholder { color:#B2C2B8; }
+  .model-list { flex:1 1 0; min-height:0; overflow:auto; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color:#587764 transparent; padding-right:4px; }
+  .model-row { display:grid; grid-template-columns:14px minmax(0,1fr) auto; gap:8px; align-items:center; width:100%; min-height:40px; padding:9px 8px; margin-bottom:3px; text-align:left; color:#EDF5EF; background:transparent; border:1px solid transparent; border-radius:7px; }
+  .model-row:hover { background:#2B4234; }
+  .model-row[aria-checked='true'] { background:#DDF0E4; color:#173E2A; border-color:#B4D5C0; }
+  .model-row .name { min-width:0; overflow-wrap:anywhere; font-size:12px; }
+  .tick { width:12px; height:12px; border:1px solid #809C8B; border-radius:50%; }
+  [aria-checked='true'] .tick { background:#267650; border-color:#267650; box-shadow:inset 0 0 0 3px #DDF0E4; }
+  .group-title { display:flex; justify-content:space-between; margin:14px 8px 7px; }
+  .group-title:first-child { margin-top:2px; }
+  .badge { padding:1px 5px; border:1px solid var(--line); border-radius:5px; font-size:10px; white-space:nowrap; }
+  .rail .badge { color:#BBD1C3; border-color:#486252; }
+  .rail [aria-checked='true'] .badge { color:#28523A; border-color:#9DC5AC; }
+  .note { flex:none; font-size:11px; line-height:1.5; padding-top:8px; border-top:1px solid #374C3F; overflow-wrap:anywhere; }
+  .note b { color:inherit; }
+  .rail-section { flex:none; border-top:1px solid #374C3F; padding-top:10px; }
+  .rail-section>summary { cursor:pointer; font-size:12px; color:#D9E7DE; min-height:28px; }
+  .section-body { padding:10px 0 2px; display:flex; flex-direction:column; gap:10px; max-height:27dvh; overflow:auto; }
+  .session .who { font-size:12px; font-weight:600; overflow-wrap:anywhere; }
+  .session .meta { font-size:11px; }
+  .pool-list { display:flex; flex-direction:column; gap:6px; }
+  .pool-item { display:flex; align-items:center; gap:7px; padding:7px 8px; border:1px solid #41554A; border-radius:8px; background:#1E3127; }
+  .pool-item.active { border-color:#8CC6A5; background:#274136; }
+  .pool-item .who { display:block; font-size:11px; font-weight:600; overflow-wrap:anywhere; }
+  .pool-item .meta { display:block; font-size:10px; }
+  .pool-item .grow { flex:1; min-width:0; }
+  .pool-item .badge { color:#BBD1C3; border-color:#486252; }
+  .pool-item.active .badge { color:#173E2A; background:#DDF0E4; border-color:#9DC5AC; }
+  .pool-actions { display:flex; gap:3px; flex:none; }
+  .pool-actions .btn { min-height:24px; padding:2px 6px; font-size:10px; }
+  .pool-empty { font-size:11px; color:#AFBFB5; padding:4px 2px; }
+  .pool-dot { width:6px; height:6px; border-radius:50%; background:#9BAEA2; flex:none; }
+  .pool-dot.ok { background:#81D6A4; } .pool-dot.bad { background:#F08D80; } .pool-dot.cool { background:#E3C077; }
+  .mini-select { min-height:32px; padding:4px 6px; border:1px solid #41554A; border-radius:8px; background:#293D32; color:#E9F2EC; font-size:11px; }
+  .sheet .field { width:100%; min-height:40px; margin-bottom:10px; padding:9px 11px; border:1px solid var(--line); border-radius:8px; }
+  .pill { display:inline-flex; align-items:center; gap:5px; font-size:10px; white-space:nowrap; }
+  .pill .dot { width:6px; height:6px; background:#9BAEA2; border-radius:50%; }
+  .pill.ok .dot { background:#81D6A4; }
+  .pill.bad .dot { background:#F08D80; }
+  .kv { display:flex; justify-content:space-between; gap:10px; font-size:11px; }
+  .kv code { min-width:0; overflow-wrap:anywhere; text-align:right; font-size:10px; }
+  #usage .kv { display:block; }
+  #usageText { display:block; font-size:11px; color:#B9CCC1; margin-top:3px; }
+  .bar { height:4px; margin-top:7px; border-radius:4px; background:#3C5144; overflow:hidden; }
+  .bar>i { display:block; height:100%; background:#83D2A4; }
+  .switch { display:flex; justify-content:space-between; gap:8px; align-items:center; font-size:12px; }
+  .switch input { accent-color:var(--green); width:16px; height:16px; }
+  main { height:100dvh; min-width:0; min-height:0; display:flex; flex-direction:column; }
+  .topbar { flex:none; min-height:72px; padding:16px 28px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--line); background:#FFF; }
+  .topbar>div:first-child { min-width:0; }
+  .topbar h1 { font-size:17px; font-weight:600; }
+  .sub { font-size:11px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:50vw; }
+  .spacer,.grow { flex:1; }
+  .rail-toggle { display:none; }
+  .banner { flex:none; display:none; margin:12px 24px 0; padding:10px 12px; background:#FBF0DE; border:1px solid #E4CEAC; border-radius:8px; font-size:12px; }
+  .chat { flex:1 1 0; min-height:0; overflow:auto; padding:28px clamp(16px,4vw,56px); }
+  .chat:has(.empty:not([style*='none'])) { display:flex; align-items:center; justify-content:center; }
+  .empty { width:100%; max-width:480px; text-align:center; color:var(--muted); margin:auto; padding:30px 0; }
+  .empty h2 { font-size:clamp(22px,3vw,30px); font-weight:600; color:var(--ink); letter-spacing:-.7px; margin-bottom:12px; }
+  .empty p { max-width:340px; margin:auto; font-size:13px; line-height:1.8; }
+  .turn { max-width:760px; margin:0 auto 24px; }
+  .role { margin-bottom:7px; font-size:11px; color:var(--muted); }
+  .user .role { text-align:right; }
+  .body { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.75; }
+  .user .body { margin-left:auto; width:fit-content; max-width:88%; padding:11px 15px; background:#E5EEE7; border-radius:12px 12px 3px 12px; }
+  .assistant .body { padding-left:14px; border-left:2px solid #6BA784; }
+  .body pre { max-width:100%; overflow:auto; white-space:pre; padding:12px; border-radius:8px; background:#EBF0EC; }
+  .body code { font-family:ui-monospace,monospace; background:#EBF0EC; padding:1px 4px; }
+  details.think { font-size:12px; color:var(--muted); margin:8px 0; }
+  details.think summary { cursor:pointer; }
+  .cites,.metaline { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; font-size:11px; color:var(--muted); }
+  .cite { max-width:100%; overflow-wrap:anywhere; padding:3px 7px; border:1px solid var(--line); border-radius:6px; color:var(--green); text-decoration:none; }
+  .metaline em { font-style:normal; }
+  .errorbox { margin-top:8px; padding:10px; border:1px solid #E7C4BD; background:#FBEFEA; color:var(--red); border-radius:8px; font-size:12px; }
+  .statusline { font-size:12px; color:var(--muted); }
+  .composer-wrap { flex:none; padding:8px clamp(16px,4vw,56px) 18px; }
+  .composer { width:100%; max-width:760px; margin:auto; padding:14px; background:#FFF; border:1px solid #CAD8CF; border-radius:14px; box-shadow:0 4px 20px #18352508; }
+  .composer textarea { display:block; width:100%; min-height:62px; max-height:180px; resize:vertical; border:0; outline:0; color:var(--ink); background:transparent; }
+  .composer textarea::placeholder { color:#6B7B70; }
+  .composer .row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding-top:10px; border-top:1px solid #EDF1EE; }
+  .model-field { display:flex; align-items:center; gap:8px; min-width:0; flex:1 1 190px; }
+  .model-field>span { font-size:12px; color:var(--muted); flex:none; }
+  .composer .hint { display:none; }
+  .toast { position:fixed; z-index:80; bottom:20px; left:50%; transform:translateX(-50%); max-width:90vw; padding:10px 16px; background:#21392B; color:#FFF; border-radius:8px; font-size:12px; opacity:0; pointer-events:none; }
+  .toast.show { opacity:1; }
+  .backdrop { display:none; position:fixed; inset:0; background:#0D1A1266; z-index:35; }
+  .modal { position:fixed; inset:0; z-index:60; display:none; align-items:center; justify-content:center; padding:20px; background:#0D1A1266; }
+  .modal.open { display:flex; }
+  .sheet { width:min(600px,100%); max-height:calc(100dvh - 40px); overflow:auto; padding:24px; border-radius:14px; background:#FFF; }
+  .sheet h3 { font-size:20px; margin-bottom:8px; }
+  .sheet p { font-size:12px; line-height:1.8; color:var(--muted); margin-bottom:12px; overflow-wrap:anywhere; }
+  .sheet textarea { width:100%; min-height:130px; max-height:35dvh; padding:10px; resize:vertical; border:1px solid var(--line); border-radius:8px; font:12px/1.5 ui-monospace,monospace; }
+  .err { min-height:20px; color:var(--red); font-size:12px; overflow-wrap:anywhere; }
+  .actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+  @media(max-width:900px) {
+    body { grid-template-columns:minmax(0,1fr); }
+    .rail { display:none; }
+    .rail-toggle,.rail-close { display:block; }
+    body.rail-open .rail { display:flex; position:fixed; inset:0 auto 0 0; width:min(340px,calc(100vw - 32px)); height:100dvh; z-index:40; }
+    body.rail-open .backdrop { display:block; }
+    .topbar { padding:12px 16px; min-height:64px; }
+  }
+  @media(max-width:480px) {
+    .topbar { gap:6px; padding:10px 12px; }
+    .topbar .sub { max-width:35vw; font-size:10px; }
+    .topbar .btn { padding:6px 9px; }
+    .chat { padding:18px 16px; }
+    .composer-wrap { padding:8px 12px max(12px,env(safe-area-inset-bottom)); }
+    .composer { padding:12px; }
+    .model-field { flex-basis:160px; }
+    .composer .grow { display:none; }
+    .sheet { padding:18px; }
+  }
+  .model-trigger { display:flex; align-items:center; gap:10px; min-width:0; max-width:100%; min-height:40px; padding:8px 12px; border:1px solid transparent; border-radius:8px; background:#EFF4F0; color:#254D37; cursor:pointer; }
+  .model-trigger:hover,.model-trigger[aria-expanded="true"] { background:#E2EEE5; border-color:#BCD4C4; }
+  .model-trigger .model-name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; font-size:13px; }
+  .model-trigger .chevron { width:7px; height:7px; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; transform:rotate(45deg); margin:0 3px 4px 6px; flex:none; }
+  .model-picker { position:fixed; inset:auto; margin:0; width:min(420px,calc(100vw - 24px)); max-height:min(440px,calc(100dvh - 32px)); padding:0; border:1px solid #D9E4DD; border-radius:14px; background:#FFF; color:var(--ink); box-shadow:0 16px 56px #162D2026,0 2px 6px #162D200A; overflow:hidden; }
+  .model-picker:popover-open { display:flex; flex-direction:column; }
+  .picker-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 16px 10px; }
+  .picker-heading h3 { font-size:14px; font-weight:600; }
+  .picker-caption { color:var(--muted); font-size:11px; }
+  .picker-search { margin:0 12px 12px; width:calc(100% - 24px); min-height:40px; flex:none; border:1px solid #DFE7E1; border-radius:8px; padding:9px 11px; color:var(--ink); background:#F6F8F6; }
+  .picker-search::placeholder { color:var(--muted); }
+  .picker-list { min-height:0; flex:1; overflow:auto; overscroll-behavior:contain; padding:0 8px 10px; scrollbar-width:thin; }
+  .picker-list .model-row { color:var(--ink); padding:10px; min-height:44px; }
+  .picker-list .model-row:hover { background:#F0F5F1; }
+  .picker-list .model-row[aria-checked="true"] { background:#E5F2E9; border-color:transparent; color:#165637; }
+  .picker-list .model-row .name { font-size:13px; }
+  .picker-list .group-title { margin:12px 10px 6px; color:#66766B; }
+  .picker-list .badge { background:#F5F7F5; color:#647369; border:0; }
+  .picker-list [aria-checked="true"] .tick { border:0; background:transparent; box-shadow:none; border-radius:0; width:11px; height:6px; border-left:2px solid #267650; border-bottom:2px solid #267650; transform:rotate(-45deg); margin-top:-3px; }
+  .picker-empty { padding:28px 12px; text-align:center; color:var(--muted); font-size:13px; }
+</style>
+</head>
+<body>
+<aside class="rail">
+  <div class="brand">
+    <svg viewBox="0 0 120 120" aria-hidden="true">
+      <rect x="20" y="70" width="8" height="30" rx="1" fill="#9A5228"/>
+      <path d="M18.5 100 h11" stroke="#9A5228" stroke-width="3" stroke-linecap="round"/>
+      <path d="M20 20 L20 70 L28 70 L28 55 L50 55 C63 55 70 48 70 37.5 C70 27 63 20 50 20 L20 20 Z M28 28 L50 28 C58 28 62 31 62 37.5 C62 44 58 47 50 47 L28 47 L28 28 Z" fill-rule="evenodd" fill="#3D7A52"/>
+      <rect x="43" y="31" width="12" height="12" rx="2.4" fill="#FFF8F0"/>
+      <rect x="47.5" y="34.5" width="5" height="6" rx="1" fill="#1A1410"/>
+      <path d="M70 34 L81 37.5 L70 37.5 Z" fill="#B5632F"/>
+    </svg>
+    <div>
+      <b>Perch Adapter</b>
+      <small>LOCAL CONSOLE</small>
+    </div>
+    <button class="btn rail-close" id="railClose" aria-label="关闭模型面板">关闭</button>
+  </div>
+
+  <div class="models">
+    <label class="label" for="search">选择模型</label>
+    <input class="search" id="search" placeholder="搜索模型…" />
+    <div class="model-list" id="modelList"></div>
+    <div class="note" id="planNote"></div>
+  </div>
+
+  <details class="rail-section session" name="rail-settings"><summary>账号与用量</summary><div class="section-body">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px">
+      <div style="min-width:0">
+        <div class="who" id="who">检查中…</div>
+        <div class="meta" id="plan">—</div>
+      </div>
+      <span class="pill" id="statusPill"><span class="dot"></span><span id="statusText">…</span></span>
+    </div>
+    <div id="usage" style="margin-top:10px;display:none">
+      <div class="kv"><span class="label" id="usageLabel">usage</span><span id="usageText">—</span></div>
+      <div class="bar"><i id="usageBar" style="width:0%"></i></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:10px">
+      <button class="btn mini" id="pasteCookie" style="flex:1">粘贴 Cookie</button>
+      <button class="btn mini" id="clearCookie">移除</button>
+    </div>
+  </div></details>
+
+  <details class="rail-section" name="rail-settings"><summary>号池</summary><div class="section-body">
+    <div class="pool-list" id="poolList"></div>
+    <div style="display:flex;gap:6px">
+      <button class="btn mini" id="addAccount" style="flex:1">＋ 添加账号</button>
+      <select class="mini-select" id="poolStrategy" title="自动分配策略">
+        <option value="round-robin">轮询</option>
+        <option value="least-recently-used">最少使用</option>
+      </select>
+    </div>
+    <div class="note" id="poolNote"></div>
+  </div></details>
+
+  <details class="rail-section" name="rail-settings"><summary>API 接入</summary><div class="section-body">
+    <div class="kv"><span>Base URL</span><code id="baseUrl">/v1</code></div>
+    <div class="kv"><span>API key</span><code id="apiKey">••••</code></div>
+    <div style="display:flex;gap:6px">
+      <button class="btn" id="copyBase" style="flex:1">复制地址</button>
+      <button class="btn" id="toggleKey" style="flex:1">显示 Key</button>
+    </div>
+  </div></details>
+
+
+  <details class="rail-section" name="rail-settings"><summary>对话设置</summary><div class="section-body">
+    <label class="switch">
+      <span>Web search</span>
+      <input type="checkbox" id="webSearch" />
+    </label>
+    <button class="btn" id="testModel">实测当前模型（消耗额度）</button>
+  </div></details>
+</aside>
+
+<main>
+  <div class="topbar">
+    <div>
+      <h1 id="threadTitle">新对话</h1>
+      <div class="sub" id="threadSub">OpenAI 兼容 · chat.perchai.app 会话</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn rail-toggle" id="railToggle">☰ 模型</button>
+    <button class="btn" id="newChat">＋ 新对话</button>
+  </div>
+
+  <div class="banner" id="banner"></div>
+
+  <div class="chat" id="chat">
+    <div class="empty" id="empty">
+      <h2>选一个模型，开始对话。</h2>
+      <p>在下方切换模型，或打开模型面板搜索。<br>你的思路，从这里继续。</p>
+    </div>
+  </div>
+
+  <div class="composer-wrap">
+    <form class="composer" id="composerForm" autocomplete="off">
+      <textarea id="input" name="message" aria-label="消息" rows="2" placeholder="问点什么…（Enter 发送，Shift+Enter 换行）"></textarea>
+      <div class="row">
+        <div class="model-field"><span>模型</span><button type="button" class="model-trigger" id="quickModel" aria-haspopup="dialog" aria-expanded="false" aria-controls="modelPicker" aria-label="选择模型"><span class="model-name" id="currentModel">加载模型…</span><span class="chevron" aria-hidden="true"></span></button></div>
+        <span class="hint" id="composerHint">perch-auto</span>
+        <span class="grow"></span>
+        <button type="button" class="btn" id="stop" style="display:none">停止</button>
+        <button type="submit" class="btn primary" id="send">发送</button>
+      </div>
+    </form>
+  </div>
+
+</main>
+
+<div id="modelPicker" class="model-picker" popover role="dialog" aria-labelledby="pickerTitle">
+  <div class="picker-heading"><h3 id="pickerTitle">选择模型</h3><span class="picker-caption">切换后用于下一条消息</span></div>
+  <input class="picker-search" id="pickerSearch" type="search" aria-label="搜索可用模型" placeholder="搜索模型名称…" autocomplete="off" />
+  <div class="picker-list" id="pickerList" role="radiogroup" aria-label="可选模型"></div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="modal" id="cookieModal">
+  <div class="sheet">
+    <h3>添加账号</h3>
+    <p>把 chat.perchai.app 的 Cookie 粘进来（DevTools → Application → Cookies，或 Network 请求头里的 Cookie 整行）。要 <code>sb-zlfuvsfjtgsdtqcaykia-auth-token.0</code> 和 <code>.1</code> 两个；直接贴 <code>base64-</code> 开头的值也可以。</p>
+    <textarea id="cookieInput" spellcheck="false" placeholder="sb-zlfuvsfjtgsdtqcaykia-auth-token.0=...&#10;sb-zlfuvsfjtgsdtqcaykia-auth-token.1=..."></textarea>
+    <input class="field" id="cookieLabel" maxlength="60" placeholder="备注名（可选，如 账号A）" />
+    <div class="err" id="cookieErr"></div>
+    <div class="actions">
+      <button class="btn" id="cookieCancel">取消</button>
+      <button class="btn primary" id="cookieSave">识别并加入号池</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const state = {
+  models: [],
+  model: localStorage.getItem("perch.model") || "perch-auto",
+  threadId: null,
+  messages: [],
+  busy: false,
+  controller: null,
+  apiKey: null,
+  draftRevision: 0,
+  webModelAccess: null,
+  accountId: localStorage.getItem("perch.accountId") || null,
+  accountLabel: null,
+  pool: null,
+  testResults: JSON.parse(localStorage.getItem("perch.testResults") || "{}"),
+};
+
+function toast(text) {
+  const el = $("toast");
+  el.textContent = text;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 1600);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+function renderText(text) {
+  const parts = String(text).split(/```/);
+  return parts.map((part, i) => {
+    if (i % 2 === 1) return "<pre>" + escapeHtml(part.replace(/^[a-zA-Z0-9]*\n/, "")) + "</pre>";
+    return escapeHtml(part)
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+  }).join("");
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(path, { credentials: "same-origin", ...opts });
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  return res;
+}
+
+async function loadAccount(accountId = state.accountId) {
+  try {
+    const path = "/console/api/account" + (accountId ? "?accountId=" + encodeURIComponent(accountId) : "");
+    const data = await (await api(path)).json();
+    if (data.pool) renderPool(data.pool);
+    if (!data.hasSession) {
+      $("who").textContent = "未登录";
+      $("plan").textContent = "运行 npm run login";
+      $("statusPill").className = "pill bad";
+      $("statusText").textContent = "no session";
+      $("banner").style.display = "block";
+      $("planNote").textContent = "";
+      $("banner").innerHTML = "还没有 Perch 会话：<button class=\"btn mini\" id=\"bannerCookie\">粘贴 Cookie</button> 直接识别账号，或在终端运行 <code>npm run login</code>。";
+      return;
+    }
+    state.accountLabel = data.account?.label || data.email || null;
+    $("who").textContent = data.email || data.name || "已登录";
+    const ttl = data.expiresInSec ? " · session " + Math.round(data.expiresInSec / 60) + "m" : "";
+    $("plan").textContent = (data.planName || data.planCode || "unknown") + (data.role ? " · " + data.role : "") + ttl;
+    $("statusPill").className = "pill ok";
+    $("statusText").textContent = "connected";
+    $("banner").style.display = "none";
+    const starter = ["pilot", "demo", "starter"].includes(data.planCode);
+    state.webModelAccess = data.webModelAccess || { starter, canPin: !starter && (data.entitlements || []).some(e => e.key === "models.manual_select" && e.value_json?.enabled === true) };
+    $("planNote").textContent = state.webModelAccess.starter
+      ? "Starter（Pilot）· 桌面组已接通官方 CLI；Pro 模型仍需升级。"
+      : state.webModelAccess.canPin ? "已具备 Web 手动选模权限，具体可用性由上游决定。" : "当前账号未获得 Web 手动选模权限。";
+    if (starter) $("plan").textContent = "Starter（" + (data.planCode || "") + "）" + ttl;
+    renderModels();
+    const meter = data.usageMeter || {};
+    const daily = [];
+    if (meter.dailyPt != null) daily.push(Number(meter.dailyPt).toFixed(2) + " PT");
+    if (meter.dailyUsd != null) daily.push("$" + Number(meter.dailyUsd).toFixed(4));
+    if (meter.dailyTokens) daily.push(Number(meter.dailyTokens).toLocaleString() + " tok");
+    if (meter.dailyCalls != null) daily.push(meter.dailyCalls + " calls");
+    const roll = meter.roostRolling || null;
+    if (daily.length || (roll && roll.window5hCapUsd)) {
+      $("usage").style.display = "block";
+      $("usageLabel").textContent = "today";
+      $("usageText").textContent = daily.join(" · ");
+      if (roll && roll.window5hCapUsd) {
+        $("usageBar").style.width = Math.max(1, Math.min(100, (roll.window5hUsd / roll.window5hCapUsd) * 100)) + "%";
+        $("usageText").textContent = daily.join(" · ") + "  |  5h $" + Number(roll.window5hUsd).toFixed(4) + " / $" + Number(roll.window5hCapUsd).toFixed(2);
+      }
+    }
+  } catch (e) {
+    $("who").textContent = "控制台未授权";
+    $("plan").textContent = "刷新页面重试";
+    $("statusPill").className = "pill bad";
+    $("statusText").textContent = "error";
+  }
+}
+
+function strategyLabel(strategy) {
+  return strategy === "least-recently-used" ? "最少使用" : "轮询";
+}
+
+function renderPool(pool) {
+  if (pool) state.pool = pool;
+  const current = state.pool || { accounts: [], strategy: "round-robin" };
+  const host = $("poolList");
+  if (!host) return;
+  host.innerHTML = "";
+  const accounts = current.accounts || [];
+
+  const auto = document.createElement("button");
+  auto.type = "button";
+  auto.className = "pool-item" + (!state.accountId ? " active" : "");
+  auto.style.width = "100%";
+  auto.style.textAlign = "left";
+  auto.innerHTML = '<span class="pool-dot ok"></span><span class="grow"><span class="who">自动分配</span><span class="meta">' +
+    escapeHtml(strategyLabel(current.strategy)) + ' · 同一对话保持同一账号</span></span>' +
+    (!state.accountId ? '<span class="badge">使用中</span>' : '');
+  auto.onclick = () => setPoolAccount(null);
+  host.appendChild(auto);
+
+  for (const a of accounts) {
+    const row = document.createElement("div");
+    row.className = "pool-item" + (state.accountId === a.id ? " active" : "");
+    const dot = !a.enabled ? "bad" : a.cooldownSec > 0 ? "cool" : "ok";
+    const bits = [a.email || a.userId || "", a.planCode || ""].filter(Boolean);
+    if (!a.enabled) bits.push("已停用");
+    else if (a.cooldownSec > 0) bits.push("冷却 " + a.cooldownSec + "s");
+    else if (a.lastError) bits.push("上次失败");
+    row.innerHTML = '<span class="pool-dot ' + dot + '"></span><span class="grow"><span class="who">' +
+      escapeHtml(a.label || a.id) + '</span><span class="meta">' + escapeHtml(bits.join(" · ")) + '</span></span>';
+    const actions = document.createElement("div");
+    actions.className = "pool-actions";
+    const toggle = document.createElement("button");
+    toggle.className = "btn mini"; toggle.type = "button";
+    toggle.textContent = a.enabled ? "停用" : "启用";
+    toggle.onclick = () => patchPoolAccount(a.id, { enabled: !a.enabled });
+    const probe = document.createElement("button");
+    probe.className = "btn mini"; probe.type = "button"; probe.textContent = "测";
+    probe.onclick = () => testPoolAccount(a.id);
+    const del = document.createElement("button");
+    del.className = "btn mini"; del.type = "button"; del.textContent = "删";
+    del.onclick = () => removePoolAccount(a.id, a.label);
+    actions.append(toggle, probe, del);
+    row.appendChild(actions);
+    row.onclick = (e) => { if (e.target.closest("button")) return; setPoolAccount(a.id); };
+    host.appendChild(row);
+  }
+  if (!accounts.length) {
+    const empty = document.createElement("div");
+    empty.className = "pool-empty";
+    empty.textContent = "还没有账号。添加后会按策略自动分配。";
+    host.appendChild(empty);
+  }
+  $("poolStrategy").value = current.strategy || "round-robin";
+  const active = accounts.find((a) => a.id === state.accountId);
+  $("poolNote").textContent = accounts.length
+    ? "共 " + accounts.length + " 个 · " + (state.accountId ? "固定到 " + (active?.label || state.accountId) : "自动 " + strategyLabel(current.strategy))
+    : "";
+}
+
+async function loadPool() {
+  const data = await (await api("/console/api/accounts")).json();
+  if (state.accountId && !(data.accounts || []).some((a) => a.id === state.accountId)) {
+    state.accountId = null;
+    localStorage.removeItem("perch.accountId");
+  }
+  renderPool(data);
+  return data;
+}
+
+async function setPoolAccount(id) {
+  const changed = state.accountId !== id;
+  state.accountId = id;
+  if (id) localStorage.setItem("perch.accountId", id);
+  else localStorage.removeItem("perch.accountId");
+  if (changed) {
+    state.threadId = null;
+    state.messages = [];
+    $("threadTitle").textContent = "新对话";
+    $("threadSub").textContent = "OpenAI 兼容 · chat.perchai.app 会话";
+    renderChat();
+  }
+  if (id) {
+    await fetch("/console/api/accounts/select", {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    }).catch(() => {});
+  }
+  renderPool();
+  await loadAccount(id);
+  const found = (state.pool?.accounts || []).find((a) => a.id === id);
+  toast(id ? "已固定到 " + (found?.label || id) : "已切回自动分配");
+}
+
+async function patchPoolAccount(id, patch) {
+  try {
+    const res = await fetch("/console/api/accounts", {
+      method: "PATCH", credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, ...patch }),
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || "更新失败");
+    renderPool(data);
+    toast("已更新账号");
+  } catch (e) { toast("更新失败：" + e.message); }
+}
+
+async function removePoolAccount(id, label) {
+  if (!confirm("从号池移除「" + (label || id) + "」？不会删除上游账号。")) return;
+  try {
+    const res = await fetch("/console/api/accounts", {
+      method: "DELETE", credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || "移除失败");
+    if (state.accountId === id) {
+      state.accountId = null;
+      localStorage.removeItem("perch.accountId");
+      state.threadId = null;
+      state.messages = [];
+      renderChat();
+    }
+    renderPool(data);
+    await loadAccount();
+    toast("已移除账号");
+  } catch (e) { toast("移除失败：" + e.message); }
+}
+
+async function testPoolAccount(id) {
+  toast("正在检查账号…");
+  try {
+    const res = await fetch("/console/api/accounts/test", {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || "检查失败");
+    const a = data.account || {};
+    renderPool(data);
+    toast((a.label || id) + " ✓ " + (a.email || "") + (a.planCode ? " · " + a.planCode : ""));
+    await loadAccount(state.accountId || id);
+  } catch (e) { toast("检查失败：" + e.message); }
+}
+
+async function setPoolStrategy(strategy) {
+  try {
+    const res = await fetch("/console/api/accounts/strategy", {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ strategy }),
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || "设置失败");
+    renderPool(data);
+    toast("分配策略：" + strategyLabel(strategy));
+  } catch (e) { toast("设置失败：" + e.message); }
+}
+
+async function loadModels() {
+  const data = await (await api("/console/api/models")).json();
+  state.models = data.models || [];
+  renderModels();
+  syncQuickModel();
+}
+
+function renderModels(target = "modelList", searchId = "search") {
+  const q = $(searchId).value.trim().toLowerCase();
+  const groups = [
+    ["roost", "Roost 档位"],
+    ["starter", "Starter · 桌面 / CLI"],
+    ["named", "Pro 模型"],
+  ];
+  const host = $(target);
+  host.innerHTML = "";
+  for (const [key, title] of groups) {
+    const items = state.models.filter((m) => m.group === key && (!q || m.id.toLowerCase().includes(q)));
+    if (!items.length) continue;
+    const head = document.createElement("div");
+    head.className = "group-title";
+    head.innerHTML = "<span>" + title + "</span><span>" + items.length + "</span>";
+    host.appendChild(head);
+    for (const m of items) {
+      const btn = document.createElement("button");
+      btn.className = "model-row";
+      btn.setAttribute("role", "radio");
+      btn.setAttribute("aria-checked", String(m.id === state.model));
+      const test = state.testResults[m.id];
+      const upgradeRequired = state.webModelAccess?.starter && (m.group === "named" || ["pro", "pro_max"].includes(m.perch?.roostChoice));
+      const badge = m.expired ? '<span class="badge">体验已结束</span>' : upgradeRequired ? '<span class="badge pro">需升级</span>' : m.starterPool && state.webModelAccess?.starter ? '<span class="badge starter">CLI</span>' : m.group === "roost" ? "" : '<span class="badge">具名模型</span>';
+      btn.disabled = Boolean(upgradeRequired || m.expired);
+      if (upgradeRequired) btn.title = "当前套餐不包含，需升级";
+      if (m.expired) btn.title = "Starter 限时体验已结束";
+      btn.innerHTML = '<span class="tick"></span><span class="name" title="' + escapeHtml(m.perch.manualModelOptionId || m.id) + '">' +
+        escapeHtml(m.id) + '</span><span style="display:flex;gap:4px;align-items:center">' + badge +
+        (test ? '<span class="badge" title="' + escapeHtml(test.error || "ok") + '">' + (test.ok ? "✓" : "✗") + '</span>' : "") + '</span>';
+      btn.onclick = () => {
+        selectModel(m.id);
+      };
+      host.appendChild(btn);
+    }
+  }
+  if (!host.childElementCount) {
+    const empty = document.createElement("div");
+    empty.className = "picker-empty";
+    empty.textContent = "没有找到匹配的模型";
+    host.appendChild(empty);
+  }
+}
+
+function syncQuickModel() {
+  $("currentModel").textContent = state.model;
+  $("quickModel").title = state.model;
+}
+
+function openModelPicker() {
+  const picker = $("modelPicker");
+  if (picker.matches(":popover-open")) { picker.hidePopover(); return; }
+  $("pickerSearch").value = "";
+  renderModels("pickerList", "pickerSearch");
+  picker.showPopover();
+  positionModelPicker();
+  $("pickerSearch").focus();
+}
+
+function positionModelPicker() {
+  const picker = $("modelPicker");
+  const anchor = $("quickModel").getBoundingClientRect();
+  const box = picker.getBoundingClientRect();
+  picker.style.left = Math.max(12, Math.min(anchor.left, window.innerWidth - box.width - 12)) + "px";
+  picker.style.top = Math.max(12, anchor.top - box.height - 8) + "px";
+}
+
+function selectModel(id) {
+  state.model = id;
+  localStorage.setItem("perch.model", id);
+  renderModels();
+  syncQuickModel();
+  if ($("modelPicker").matches(":popover-open")) { $("modelPicker").hidePopover(); $("quickModel").focus(); }
+  updateHint();
+  document.body.classList.remove("rail-open");
+}
+
+function updateHint() {
+  const m = state.models.find((x) => x.id === state.model);
+  $("composerHint").textContent = state.model + (m?.perch?.manualModelOptionId ? " · " + m.perch.manualModelOptionId : "");
+}
+
+function renderChat() {
+  const chat = $("chat");
+  chat.querySelectorAll(".turn").forEach((n) => n.remove());
+  $("empty").style.display = state.messages.length ? "none" : "block";
+  for (const m of state.messages) chat.appendChild(renderTurn(m));
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function renderTurn(m) {
+  const el = document.createElement("div");
+  el.className = "turn " + m.role;
+  const role = document.createElement("div");
+  role.className = "role";
+  role.textContent = m.role === "user" ? "you" : "perch";
+  const body = document.createElement("div");
+  body.className = "body";
+  if (m.role === "assistant") {
+    if (m.reasoning) {
+      const d = document.createElement("details");
+      d.className = "think";
+      d.innerHTML = "<summary>思考过程 · " + m.reasoning.length + " 字</summary><div>" + escapeHtml(m.reasoning) + "</div>";
+      el.appendChild(d);
+    }
+    body.innerHTML = renderText(m.text || (m.pending ? "…" : ""));
+    el.appendChild(role);
+    el.appendChild(body);
+    if (m.citations?.length) {
+      const wrap = document.createElement("div");
+      wrap.className = "cites";
+      m.citations.slice(0, 8).forEach((c, i) => {
+        const a = document.createElement("a");
+        a.className = "cite";
+        a.href = c.url || "#";
+        a.target = "_blank";
+        a.rel = "noreferrer";
+        a.textContent = "[" + (i + 1) + "] " + (c.title || c.url || "source");
+        wrap.appendChild(a);
+      });
+      el.appendChild(wrap);
+    }
+    if (m.error) {
+      const box = document.createElement("div");
+      box.className = "errorbox";
+      const hint = {
+        starterModel: "这个具名模型不在 Starter 池里：换成 Roost 档位，或换一个模型。",
+        starterTier: "Starter 只包含部分档位（一般只有 standard）。",
+        modelRestricted: "该模型当前被限流，换一个或稍后再试。",
+        turnRateLimited: "触发了账号轮次限流，等一会儿再发。",
+        not_authenticated: "会话失效：重新粘贴 Cookie 或跑 npm run login。",
+        surfaceRequired: "上游判定不是 Web/Desktop/CLI 的正常 Web 会话调用。",
+        promo_overflow_decision: "促销额度需要二次确认，重发一次即可。",
+      }[m.errorCode];
+      box.textContent = m.error + (m.errorCode ? " (" + m.errorCode + ")" : "") + (hint ? " — " + hint : "");
+      el.appendChild(box);
+    }
+    const meta = [];
+    if (m.requestedModel) meta.push("请求：" + escapeHtml(m.requestedModel));
+    if (m.account) meta.push("账号：" + escapeHtml(m.account));
+    if (m.modelLabel) meta.push("返回：<em>" + escapeHtml(m.modelLabel) + "</em>");
+    if (m.tier) meta.push(escapeHtml(m.tier));
+    if (m.transport === "official-cli") meta.push("官方 CLI");
+    if (m.usage?.totalTokens) meta.push(Number(m.usage.totalTokens).toLocaleString() + " tokens");
+    if (m.durationMs) meta.push((m.durationMs / 1000).toFixed(1) + "s");
+    if (m.thinkingMs) meta.push("think " + (m.thinkingMs / 1000).toFixed(1) + "s");
+    if (meta.length) {
+      const line = document.createElement("div");
+      line.className = "metaline";
+      line.innerHTML = meta.join(" · ");
+      el.appendChild(line);
+    }
+    if (m.status) {
+      const line = document.createElement("div");
+      line.className = "statusline";
+      line.textContent = m.status;
+      el.appendChild(line);
+    }
+  } else {
+    body.textContent = m.text;
+    el.appendChild(role);
+    el.appendChild(body);
+  }
+  return el;
+}
+
+function patchLast(fn) {
+  const m = state.messages[state.messages.length - 1];
+  if (!m) return;
+  fn(m);
+  renderChat();
+}
+
+function clearComposer() {
+  $("composerForm").reset();
+  $("input").value = "";
+  $("input").dispatchEvent(new Event("input", { bubbles: true }));
+  $("input").dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+async function send() {
+  if (state.busy) return;
+  const text = $("input").value.trim();
+  if (!text) return;
+  const requestedModel = state.model;
+  clearComposer();
+  const submittedRevision = state.draftRevision;
+  requestAnimationFrame(() => {
+    if (state.draftRevision === submittedRevision && $("input").value === text) clearComposer();
+  });
+  state.busy = true;
+  $("send").disabled = true;
+  $("stop").style.display = "inline-block";
+  state.messages.push({ role: "user", text });
+  state.messages.push({ role: "assistant", text: "", reasoning: "", pending: true, requestedModel });
+  renderChat();
+
+  state.controller = new AbortController();
+  try {
+    const res = await fetch("/console/api/chat", {
+      method: "POST",
+      credentials: "same-origin",
+      signal: state.controller.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        threadId: state.threadId,
+        model: requestedModel,
+        message: text,
+        webSearch: $("webSearch").checked,
+        accountId: state.accountId || null,
+      }),
+    });
+    if (!res.ok || !res.body || !res.headers.get("content-type")?.includes("text/event-stream")) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || "HTTP " + res.status);
+    }
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = "";
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let idx;
+      while ((idx = buf.indexOf("\n\n")) >= 0) {
+        const block = buf.slice(0, idx);
+        buf = buf.slice(idx + 2);
+        for (const line of block.split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          let ev;
+          try { ev = JSON.parse(line.slice(6)); } catch { continue; }
+          handleEvent(ev);
+        }
+      }
+    }
+  } catch (e) {
+    if (e.name === "AbortError") {
+      patchLast((m) => { m.pending = false; m.status = "已停止"; });
+    } else {
+      patchLast((m) => { m.pending = false; m.error = e.message; });
+    }
+  } finally {
+    patchLast((m) => { m.pending = false; });
+    state.busy = false;
+    $("send").disabled = false;
+    $("stop").style.display = "none";
+    state.controller = null;
+  }
+}
+
+function handleEvent(ev) {
+
+  if (ev.type === "thread") {
+    if (ev.transportChanged) toast("已切换调用通道，新建独立对话");
+    state.threadId = ev.threadId;
+    state.accountLabel = ev.account?.label || null;
+    $("threadSub").textContent = "thread · " + ev.threadId.slice(0, 10) + (ev.account?.label ? " · " + ev.account.label : "");
+    return;
+  }
+  if (ev.type === "delta") return patchLast((m) => { m.text += ev.text || ""; m.status = ""; });
+  if (ev.type === "reasoning") return patchLast((m) => { m.reasoning += ev.text || ""; });
+  if (ev.type === "status") return patchLast((m) => { m.status = ev.phase === "cli_running" ? "CLI 协议正在响应…" : ev.phase === "searching" ? "正在搜索：" + (ev.query || "") : ev.phase; });
+  if (ev.type === "citations") return patchLast((m) => { m.citations = ev.citations || []; });
+  if (ev.type === "artifact") return patchLast((m) => { m.artifact = ev.artifact; });
+  if (ev.type === "done") {
+    return patchLast((m) => {
+      m.pending = false;
+      if (ev.text && ev.text.length > m.text.length && ev.text.startsWith(m.text)) m.text = ev.text;
+      m.ok = ev.ok;
+      m.error = ev.ok ? null : ev.error || "请求失败";
+      m.errorCode = ev.errorCode;
+      m.modelLabel = ev.modelLabel;
+      m.transport = ev.transport;
+      m.account = ev.account?.label || null;
+      m.usage = ev.usage;
+      m.tier = ev.tier;
+      m.durationMs = ev.durationMs;
+      m.thinkingMs = ev.thinkingMs;
+      if (ev.citations) m.citations = ev.citations;
+      m.status = "";
+    });
+  }
+}
+
+async function testModel() {
+  const btn = $("testModel");
+  btn.disabled = true;
+  btn.textContent = "测试中…";
+  try {
+    const res = await fetch("/console/api/model-test", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: state.model, accountId: state.accountId || null }),
+    });
+    const data = await res.json();
+    state.testResults[state.model] = data;
+    localStorage.setItem("perch.testResults", JSON.stringify(state.testResults));
+    renderModels();
+    toast(data.ok ? state.model + " ✓ " + (data.modelLabel || "") : state.model + " ✗ " + (data.errorCode || data.error || ""));
+
+  } catch (e) {
+    toast("测试失败：" + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "实测当前模型（消耗额度）";
+  }
+}
+
+async function boot() {
+  $("baseUrl").textContent = location.origin + "/v1";
+  $("webSearch").checked = localStorage.getItem("perch.webSearch") === "1";
+  $("search").addEventListener("input", () => renderModels());
+  $("newChat").onclick = () => {
+    state.threadId = null;
+    state.messages = [];
+    $("threadTitle").textContent = "新对话";
+    $("threadSub").textContent = "OpenAI 兼容 · chat.perchai.app 会话";
+    renderChat();
+  };
+  $("composerForm").onsubmit = (e) => { e.preventDefault(); send(); };
+  $("input").addEventListener("input", () => { state.draftRevision += 1; });
+  $("quickModel").onclick = openModelPicker;
+  $("pickerSearch").addEventListener("input", () => { renderModels("pickerList", "pickerSearch"); positionModelPicker(); });
+  $("pickerSearch").addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); $("pickerList").querySelector("button")?.focus(); }
+  });
+  $("modelPicker").addEventListener("toggle", (e) => $("quickModel").setAttribute("aria-expanded", String(e.newState === "open")));
+  window.addEventListener("resize", () => { if ($("modelPicker").matches(":popover-open")) $("modelPicker").hidePopover(); });
+  $("railToggle").onclick = () => { document.body.classList.add("rail-open"); $("search").focus(); };
+  $("railClose").onclick = () => { document.body.classList.remove("rail-open"); $("railToggle").focus(); };
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { document.body.classList.remove("rail-open"); $("cookieModal").classList.remove("open"); } });
+  $("backdrop").onclick = () => document.body.classList.remove("rail-open");
+  $("input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); send(); }
+  });
+  $("stop").onclick = async () => {
+    if (state.controller) state.controller.abort();
+    if (state.threadId) {
+      await fetch("/console/api/stop", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ threadId: state.threadId, accountId: state.accountId || null }),
+      }).catch(() => {});
+    }
+  };
+  $("testModel").onclick = testModel;
+  $("webSearch").onchange = (e) => localStorage.setItem("perch.webSearch", e.target.checked ? "1" : "0");
+  $("copyBase").onclick = async () => {
+    await navigator.clipboard.writeText(location.origin + "/v1");
+    toast("已复制 base URL");
+  };
+  $("toggleKey").onclick = async () => {
+    if (!state.apiKey) {
+      const res = await fetch("/console/api/local-key", { credentials: "same-origin" });
+      const data = await res.json();
+      state.apiKey = data.apiKey || "";
+    }
+    $("apiKey").textContent = state.apiKey;
+    await navigator.clipboard.writeText(state.apiKey).catch(() => {});
+    toast("已显示并复制 API key");
+  };
+  const modal = $("cookieModal");
+  const openCookie = () => {
+    $("cookieErr").textContent = "";
+    $("cookieInput").value = "";
+    $("cookieLabel").value = "";
+    document.body.classList.remove("rail-open");
+    modal.classList.add("open");
+    setTimeout(() => $("cookieInput").focus(), 30);
+  };
+  $("pasteCookie").onclick = openCookie;
+  $("addAccount").onclick = openCookie;
+  $("poolStrategy").onchange = (e) => setPoolStrategy(e.target.value);
+  $("cookieCancel").onclick = () => modal.classList.remove("open");
+  modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("open"); });
+  $("cookieSave").onclick = async () => {
+    const raw = $("cookieInput").value.trim();
+    if (!raw) return ($("cookieErr").textContent = "先粘贴 Cookie");
+    $("cookieSave").disabled = true;
+    $("cookieErr").textContent = "识别中…";
+    try {
+      const res = await fetch("/console/api/session", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cookie: raw, label: $("cookieLabel").value.trim() }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        $("cookieErr").textContent = data.error || "识别失败";
+        return;
+      }
+      $("cookieInput").value = "";
+      $("cookieLabel").value = "";
+      modal.classList.remove("open");
+      await Promise.all([loadAccount(), loadPool()]);
+      renderModels();
+      toast("已加入号池：" + (data.email || "已登录") + " · " + (data.planName || data.planCode || ""));
+    } catch (e) {
+      $("cookieErr").textContent = e.message;
+    } finally {
+      $("cookieSave").disabled = false;
+    }
+  };
+  $("clearCookie").onclick = async () => {
+    const id = state.accountId || state.pool?.activeId;
+    if (!id) return toast("当前没有可移除的账号");
+    const label = state.pool?.accounts?.find((a) => a.id === id)?.label || id;
+    if (!confirm("从号池移除「" + label + "」？不会删除上游账号。")) return;
+    await fetch("/console/api/session", {
+      method: "DELETE", credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (state.accountId === id) {
+      state.accountId = null;
+      localStorage.removeItem("perch.accountId");
+    }
+    state.threadId = null;
+    state.messages = [];
+    renderChat();
+    await Promise.all([loadAccount(), loadPool()]);
+    toast("已移除账号");
+  };
+  $("banner").addEventListener("click", (e) => {
+    if (e.target.closest("#bannerCookie")) openCookie();
+  });
+  await loadPool().catch(() => {});
+  await Promise.all([loadAccount(), loadModels()]);
+  updateHint();
+  renderChat();
+}
+
+boot().catch((e) => toast("初始化失败：" + e.message));
+</script>
+</body>
+</html>

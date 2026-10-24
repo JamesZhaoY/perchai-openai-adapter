@@ -1,0 +1,24 @@
+{
+  "name": "perchai-openai-adapter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "OpenAI-compatible local adapter for Perch AI web (chat.perchai.app) sessions",
+  "license": "MIT",
+  "author": "JamesYang",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "login": "node scripts/login.mjs",
+    "session": "node scripts/set-cookie.mjs",
+    "probe": "node scripts/probe.mjs",
+    "probe:desktop": "node scripts/probe-desktop.mjs",
+    "test": "node test/mock-e2e.mjs",
+    "test:protocol": "node scripts/e2e-cli-protocol.mjs"
+  },
+  "dependencies": {
+    "perchai-cli": "2.4.115"
+  }
+}

@@ -1,0 +1,178 @@
+[
+  {
+    "name": "laguna-s",
+    "optionId": "poolside-poolside-laguna-s-2-1"
+  },
+  {
+    "name": "deepseek-flash-starter",
+    "optionId": "openrouter-deepseek-deepseek-v4-1-flash-1017-cloudflare"
+  },
+  {
+    "name": "glm-5.3-flash-starter",
+    "optionId": "openrouter-z-ai-glm-5-3-flash"
+  },
+  {
+    "name": "minimax-m3.1-flash-starter",
+    "optionId": "openrouter-minimax-minimax-m3-1-flash-free"
+  },
+  {
+    "name": "beam-1.0-starter",
+    "optionId": "openrouter-reflection-beam-1-0-501b-a23b"
+  },
+  {
+    "name": "gemini-4-argon",
+    "optionId": "gemini-gemini-4-argon"
+  },
+  {
+    "name": "claude-opus-5.5",
+    "optionId": "snowflake-claude-opus-5-5"
+  },
+  {
+    "name": "gpt-6.1-sol",
+    "optionId": "azure-foundry-gpt-6-1-sol"
+  },
+  {
+    "name": "deepseek-v4.1-flash-1017",
+    "optionId": "openrouter-deepseek-deepseek-v4-1-flash-1017"
+  },
+  {
+    "name": "gpt-6-luna",
+    "optionId": "azure-foundry-gpt-6-luna"
+  },
+  {
+    "name": "claude-sonnet-5.5",
+    "optionId": "snowflake-claude-sonnet-5-5"
+  },
+  {
+    "name": "claude-haiku-5.5",
+    "optionId": "snowflake-claude-haiku-5-5"
+  },
+  {
+    "name": "kimi-3",
+    "optionId": "azure-foundry-fw-kimi-k3"
+  },
+  {
+    "name": "grok-4.7",
+    "optionId": "azure-foundry-grok-4-7"
+  },
+  {
+    "name": "grok-4.6",
+    "optionId": "bedrock-mantle-xai-grok-4-6"
+  },
+  {
+    "name": "glm-5.3",
+    "optionId": "azure-foundry-fw-glm-5-3"
+  },
+  {
+    "name": "glm-5.3-flash",
+    "optionId": "wandb-zai-org-glm-5-3-flash"
+  },
+  {
+    "name": "deepseek-v4.1-flash",
+    "optionId": "dashscope-deepseek-v4-1-flash"
+  },
+  {
+    "name": "qwen-3.8-flash",
+    "optionId": "openrouter-qwen-qwen3-8-flash"
+  },
+  {
+    "name": "qwen-3.8-max",
+    "optionId": "openrouter-qwen-qwen3-8-max-0902"
+  },
+  {
+    "name": "qwen-3.8",
+    "optionId": "wandb-qwen-qwen3-8-27b"
+  },
+  {
+    "name": "minimax-m3",
+    "optionId": "wandb-minimax-m3"
+  },
+  {
+    "name": "nemotron-ultra",
+    "optionId": "wandb-nvidia-nvidia-nemotron-3-ultra-550b-a55b"
+  },
+  {
+    "name": "nemotron-lightning",
+    "optionId": "wandb-nvidia-nvidia-nemotron-3-5-lightning-30b-a3b"
+  },
+  {
+    "name": "deepseek-v4",
+    "optionId": "wandb-deepseek-ai-deepseek-v4-pro"
+  },
+  {
+    "name": "deepseek-v4-flash-0731-262k",
+    "optionId": "wandb-deepseek-ai-deepseek-v4-flash-0731"
+  },
+  {
+    "name": "qwen-3.7-plus",
+    "optionId": "fireworks-accounts-fireworks-models-qwen3p7-plus"
+  },
+  {
+    "name": "beam-1.0",
+    "optionId": "wandb-reflection-beam-1-0-501b-a23b"
+  },
+  {
+    "name": "kimi-2.7",
+    "optionId": "wandb-kimi-k2-7-code"
+  },
+  {
+    "name": "glm-5.2",
+    "optionId": "wandb-zai-org-glm-5-2"
+  },
+  {
+    "name": "gpt-6-sol",
+    "optionId": "azure-foundry-gpt-6-sol"
+  },
+  {
+    "name": "gpt-5.6-sol",
+    "optionId": "azure-foundry-gpt-5-6-sol"
+  },
+  {
+    "name": "gpt-5.6-terra",
+    "optionId": "azure-foundry-gpt-5-6-terra"
+  },
+  {
+    "name": "gpt-5.6-luna",
+    "optionId": "azure-foundry-gpt-5-6-luna"
+  },
+  {
+    "name": "deepseek-v4-flash-0731-1m",
+    "optionId": "dashscope-deepseek-v4-1-flash"
+  },
+  {
+    "name": "grok-4.5",
+    "optionId": "ai-gateway-xai-grok-4-5"
+  },
+  {
+    "name": "muse-spark-1.1",
+    "optionId": "meta-muse-spark-1-1"
+  },
+  {
+    "name": "muse-spark-1.2",
+    "optionId": "meta-muse-spark-1-2"
+  },
+  {
+    "name": "muse-spark-1.2-contributor",
+    "optionId": "meta-muse-spark-1-2-contributor"
+  },
+  {
+    "name": "opus-4.8",
+    "optionId": "claude-code-oauth-claude-opus-4-8"
+  },
+  {
+    "name": "gpt-5.5",
+    "optionId": "codex-oauth-gpt-5-5"
+  },
+  {
+    "name": "grok-4.3",
+    "optionId": "bedrock-mantle-xai-grok-4-3"
+  },
+  {
+    "name": "grok-build",
+    "optionId": "grok-oauth-grok-4-5"
+  },
+  {
+    "name": "grok-build-4.6",
+    "optionId": "grok-oauth-grok-4-6"
+  }
+]
